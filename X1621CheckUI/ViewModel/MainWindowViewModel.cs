@@ -1,12 +1,16 @@
-﻿using Microsoft.Practices.Prism.Commands;
+﻿using BingLibrary.hjb;
+using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using SXJLibrary;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace X1621CheckUI.ViewModel
 {
@@ -90,15 +94,29 @@ namespace X1621CheckUI.ViewModel
                 this.RaisePropertyChanged("CheckButtonIsEnabled");
             }
         }
+        private string exportButtonVisibility;
+
+        public string ExportButtonVisibility
+        {
+            get { return exportButtonVisibility; }
+            set
+            {
+                exportButtonVisibility = value;
+                this.RaisePropertyChanged("ExportButtonVisibility");
+            }
+        }
+
 
         #endregion
         #region 方法绑定
         public DelegateCommand CheckCommand { get; set; }
+        public DelegateCommand ExportCommand { get; set; }
         #endregion
         #region 构造函数
         public MainWindowViewModel()
         {
             this.CheckCommand = new DelegateCommand(()=> { CheckCommandExecute(); });
+            this.ExportCommand = new DelegateCommand(() => { ExportCommandExecute(); });
             Init();
         }
         #endregion
@@ -108,6 +126,7 @@ namespace X1621CheckUI.ViewModel
             string stm;
             DataSet ds;
             CheckButtonIsEnabled = false;
+            ExportButtonVisibility = "Collapsed";
             await Task.Run(()=> {
                 if (BoardBarcode != "")
                 {
@@ -122,6 +141,7 @@ namespace X1621CheckUI.ViewModel
                                 AddMessage(stm);
                                 ds = mysql.Select(stm);
                                 DataGrid1ItemsSource = ds.Tables["table0"];
+                                ExportButtonVisibility = "Visible";
                             }
                             else
                             {
@@ -131,6 +151,7 @@ namespace X1621CheckUI.ViewModel
                                     AddMessage(stm);
                                     ds = mysql.Select(stm);
                                     DataGrid1ItemsSource = ds.Tables["table0"];
+                                    ExportButtonVisibility = "Visible";
                                 }
                                 else
                                 {
@@ -138,6 +159,7 @@ namespace X1621CheckUI.ViewModel
                                     AddMessage(stm);
                                     ds = mysql.Select(stm);
                                     DataGrid1ItemsSource = ds.Tables["table0"];
+                                    ExportButtonVisibility = "Visible";
                                 }
                             }
 
@@ -160,6 +182,37 @@ namespace X1621CheckUI.ViewModel
                 }
             });
             CheckButtonIsEnabled = true;
+        }
+        private void ExportCommandExecute()
+        {
+            string folderPath = "";
+            FolderBrowserDialog directchoosedlg = new FolderBrowserDialog();
+            if (directchoosedlg.ShowDialog() == DialogResult.OK)
+            {
+                folderPath = directchoosedlg.SelectedPath;
+                string filePath = Path.Combine(folderPath, DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv");
+                bool result = Csvfile.dt2csv(DataGrid1ItemsSource, filePath, filePath,"");
+                if (result)
+                {
+                    AddMessage(filePath + "导出成功");
+                    try
+                    {
+                        Process process1 = new Process();
+                        process1.StartInfo.FileName = filePath;
+                        process1.StartInfo.Arguments = "";
+                        process1.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                        process1.Start();
+                    }
+                    catch (Exception ex)
+                    {
+                        AddMessage(ex.Message);
+                    }
+                }
+                else
+                {
+                    AddMessage(filePath + "导出失败");
+                }
+            }
         }
         #endregion
         #region 自定义函数
@@ -185,6 +238,7 @@ namespace X1621CheckUI.ViewModel
             BoardChecked = false;
             LineChecked = false;
             CheckButtonIsEnabled = true;
+            ExportButtonVisibility = "Collapsed";
             #endregion
             AddMessage("软件加载完成");
         }

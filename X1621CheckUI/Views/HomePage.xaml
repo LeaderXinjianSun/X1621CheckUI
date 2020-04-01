@@ -26,6 +26,7 @@
                 <RadioButton GroupName="Group1" IsChecked="{Binding BoardChecked}">载具</RadioButton>
                 <RadioButton GroupName="Group1" IsChecked="{Binding LineChecked}">线体</RadioButton>
                 <Button Width="60" Height="30" HorizontalAlignment="Right" Margin="0,0,10,0" Content="查询" IsEnabled="{Binding CheckButtonIsEnabled}" Command="{Binding CheckCommand}"></Button>
+                <Button Width="60" Height="30" HorizontalAlignment="Right" Margin="0,1,10,0" Content="导出" Visibility="{Binding ExportButtonVisibility}" Command="{Binding ExportCommand}"></Button>
             </StackPanel>
         </StackPanel>
     </Grid>
