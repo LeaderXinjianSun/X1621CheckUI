@@ -4,9 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:X1621CheckUI"
+        xmlns:Views="clr-namespace:X1621CheckUI.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="X1621CheckUI" Icon="search_64px_1181399_easyicon.net.ico" Height="600" Width="800" WindowStartupLocation ="CenterScreen" ResizeMode="NoResize">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Views:HomePage Grid.Row="1"></Views:HomePage>
     </Grid>
 </Window>
