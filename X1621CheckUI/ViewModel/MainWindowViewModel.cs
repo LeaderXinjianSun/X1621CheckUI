@@ -132,14 +132,14 @@ namespace X1621CheckUI.ViewModel
                 {
                     try
                     {
-                        Mysql mysql = new Mysql();
-                        if (mysql.Connect())
+                        SXJLibrary.Oracle oraDB = new SXJLibrary.Oracle("qddb04.eavarytech.com", "mesdb04", "ictdata", "ictdata*168");
+                        if (oraDB.isConnect())
                         {
                             if (ProductChecked)
                             {
-                                stm = "SELECT * FROM BARBIND WHERE SCBODBAR = '" + BoardBarcode + "' ORDER BY SIDATE DESC LIMIT 0,60";
+                                stm = "SELECT * FROM BARBIND WHERE SCBODBAR = '" + BoardBarcode + "'AND ROWNUM <= 60 ORDER BY SIDATE DESC";
                                 AddMessage(stm);
-                                ds = mysql.Select(stm);
+                                ds = oraDB.executeQuery(stm);
                                 DataGrid1ItemsSource = ds.Tables["table0"];
                                 ExportButtonVisibility = "Visible";
                             }
@@ -147,9 +147,9 @@ namespace X1621CheckUI.ViewModel
                             {
                                 if (BoardChecked)
                                 {
-                                    stm = "SELECT * FROM BODMSG WHERE SCBODBAR = '" + BoardBarcode + "' ORDER BY SIDATE DESC LIMIT 0,10";
+                                    stm = "SELECT * FROM BODMSG WHERE SCBODBAR = '" + BoardBarcode + "'AND ROWNUM <= 10 ORDER BY SIDATE DESC";
                                     AddMessage(stm);
-                                    ds = mysql.Select(stm);
+                                    ds = oraDB.executeQuery(stm);
                                     DataGrid1ItemsSource = ds.Tables["table0"];
                                     ExportButtonVisibility = "Visible";
                                 }
@@ -157,7 +157,7 @@ namespace X1621CheckUI.ViewModel
                                 {
                                     stm = "SELECT * FROM BODLINE";
                                     AddMessage(stm);
-                                    ds = mysql.Select(stm);
+                                    ds = oraDB.executeQuery(stm);
                                     DataGrid1ItemsSource = ds.Tables["table0"];
                                     ExportButtonVisibility = "Visible";
                                 }
@@ -168,7 +168,7 @@ namespace X1621CheckUI.ViewModel
                         {
                             AddMessage("数据库未连接");
                         }
-                        mysql.DisConnect();
+                        oraDB.disconnect();
                     }
                     catch (Exception ex)
                     {
