@@ -133,13 +133,14 @@ namespace X1621CheckUI.ViewModel
                     try
                     {
                         Mysql mysql = new Mysql();
-                        if (mysql.Connect())
+                        SXJLibrary.Oracle oraDB = new SXJLibrary.Oracle("qddb04.eavarytech.com", "mesdb04", "ictdata", "ictdata*168");
+                        if (mysql.Connect() && oraDB.isConnect())
                         {
                             if (ProductChecked)
                             {
-                                stm = "SELECT * FROM BARBIND WHERE SCBODBAR = '" + BoardBarcode + "'AND ROWNUM <= 60 ORDER BY SIDATE DESC";
+                                stm = "SELECT * FROM (SELECT * FROM BARBIND WHERE SCBODBAR = '" + BoardBarcode + "' ORDER BY SIDATE DESC) WHERE ROWNUM <= 60";
                                 AddMessage(stm);
-                                ds = mysql.Select(stm);
+                                ds = oraDB.executeQuery(stm);
                                 DataGrid1ItemsSource = ds.Tables["table0"];
                                 ExportButtonVisibility = "Visible";
                             }
@@ -147,9 +148,9 @@ namespace X1621CheckUI.ViewModel
                             {
                                 if (BoardChecked)
                                 {
-                                    stm = "SELECT * FROM BODMSG WHERE SCBODBAR = '" + BoardBarcode + "'AND ROWNUM <= 10 ORDER BY SIDATE DESC";
+                                    stm = "SELECT * FROM (SELECT * FROM BODMSG WHERE SCBODBAR = '" + BoardBarcode + "' ORDER BY SIDATE DESC) WHERE ROWNUM <= 10";
                                     AddMessage(stm);
-                                    ds = mysql.Select(stm);
+                                    ds = oraDB.executeQuery(stm);
                                     DataGrid1ItemsSource = ds.Tables["table0"];
                                     ExportButtonVisibility = "Visible";
                                 }
